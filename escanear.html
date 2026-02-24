@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Escanear - Cool Trinidad</title>
+
+<script src="https://unpkg.com/quagga/dist/quagga.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+body{
+  font-family: Arial, sans-serif;
+  background:#111;
+  color:white;
+  text-align:center;
+  margin:0;
+  padding:20px;
+}
+
+#scanner{
+  width:100%;
+  max-width:400px;
+  margin:20px auto;
+  border-radius:10px;
+  overflow:hidden;
+}
+
+#resultado{
+  margin-top:20px;
+  font-size:18px;
+}
+
+button{
+  padding:12px 20px;
+  border:none;
+  border-radius:8px;
+  background:#ff2f8e;
+  color:white;
+  cursor:pointer;
+  font-size:16px;
+}
+</style>
+</head>
+
+<body>
+<button id="back">volver a admin</button>
+
+
+<div id="startScreen" style="
+  position:fixed;
+  inset:0;
+  background:#000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  cursor:pointer;
+">
+  Tocar para iniciar escáner
+</div>
+
+<div id="scanner"></div>
+<p id="resultado">Esperando escaneo...</p>
+<div id="productoInfo" style="margin-top:20px;"></div>
+
+<button id="btnVenta" style="display:none; margin-top:15px;">
+  finalizar venta
+</button>
+
+<script>
+let carrito = [];
+let total = 0;
+let beep;
+let bloqueado = false;
+
+const supabaseClient = window.supabase.createClient(
+  "https://fwujxwmjckrbqnlioifp.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3dWp4d21qY2tyYnFubGlvaWZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4ODQ5OTAsImV4cCI6MjA4NzQ2MDk5MH0.FlPMctJpmOEvBYKBrFEzKgDVjJTHex5K-PFbLOoo1kw"
+);
+
+const video = document.createElement("video");
+video.setAttribute("playsinline", true);
+video.style.width = "100%";
+document.getElementById("scanner").appendChild(video);
+
+document.getElementById("back").onclick = () => {
+  window.location.href = "admin.html";
+};
+
+document.getElementById("startScreen").onclick = async () => {
+
+  document.getElementById("startScreen").style.display = "none";
+
+  beep = new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg");
+  await beep.play().catch(()=>{});
+  beep.pause();
+  beep.currentTime = 0;
+
+  const stream = await navigator.mediaDevices.getUserMedia({
+    video: { facingMode: "environment" }
+  });
+
+  video.srcObject = stream;
+  video.play();
+
+  iniciarDetector();
+};
+
+async function iniciarDetector(){
+
+  const detector = new BarcodeDetector({
+    formats: ["code_128","ean_13","ean_8"]
+  });
+
+  async function scan(){
+
+    if(bloqueado){
+      requestAnimationFrame(scan);
+      return;
+    }
+
+    try{
+
+      const barcodes = await detector.detect(video);
+
+      if(barcodes.length > 0){
+
+        bloqueado = true;
+
+        const codigo = barcodes[0].rawValue.trim();
+
+        beep.currentTime = 0;
+        beep.play();
+        if(navigator.vibrate) navigator.vibrate(100);
+
+        const { data: producto } = await supabaseClient
+          .from("productos")
+          .select("*")
+          .eq("codigo_barras", codigo)
+          .single();
+
+        if(!producto){
+          bloqueado = false;
+          requestAnimationFrame(scan);
+          return;
+        }
+
+        if(producto.cantidad_de_unidades <= 0){
+          alert("Sin stock");
+          bloqueado = false;
+          requestAnimationFrame(scan);
+          return;
+        }
+
+        carrito.push(producto);
+        total += producto.precio;
+
+        renderCarrito();
+
+        setTimeout(()=>{
+          bloqueado = false;
+        },800);
+      }
+
+    }catch(e){}
+
+    requestAnimationFrame(scan);
+  }
+
+  scan();
+}
+
+function renderCarrito(){
+
+  const contenedor = document.getElementById("productoInfo");
+
+  let html = "<div style='background:#222;padding:15px;border-radius:10px;'>";
+
+  carrito.forEach(p=>{
+    html += `
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+        <span>${p.nombre}</span>
+        <span>$${p.precio}</span>
+      </div>
+    `;
+  });
+
+  html += `
+    <hr style="margin:10px 0;border:1px solid #444;">
+    <div style="display:flex;justify-content:space-between;font-weight:bold;font-size:18px;">
+      <span>TOTAL</span>
+      <span>$${total}</span>
+    </div>
+  `;
+
+  html += "</div>";
+
+  contenedor.innerHTML = html;
+
+  document.getElementById("btnVenta").style.display = "block";
+}
+
+document.getElementById("btnVenta").onclick = async () => {
+
+  if(carrito.length === 0) return;
+
+  const metodo = prompt("Método de pago: efectivo o tarjeta");
+  if(!metodo) return;
+
+  const { data: venta, error } = await supabaseClient
+    .from("ventas")
+    .insert({
+      total: total,
+      metodo_pago: metodo
+    })
+    .select()
+    .single();
+
+  if(error){
+    alert("Error al registrar venta");
+    return;
+  }
+
+  for(const producto of carrito){
+
+    const nuevoStock = producto.cantidad_de_unidades - 1;
+
+    await supabaseClient
+  .from("productos")
+  .update({ cantidad_de_unidades: nuevoStock })
+  .eq("id", producto.id);
+    await supabaseClient
+      .from("detalle_venta")
+      .insert({
+        venta_id: venta.id,
+        producto_id: producto.id,
+        precio: producto.precio,
+        cantidad: 1
+      });
+  }
+
+  carrito = [];
+  total = 0;
+
+  document.getElementById("productoInfo").innerHTML =
+    "<p style='color:lightgreen;'>Venta completada ✔</p>";
+
+  document.getElementById("btnVenta").style.display = "none";
+};
+</script>
+
+
+</body>
+</html>

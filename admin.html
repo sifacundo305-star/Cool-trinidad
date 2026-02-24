@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>caja</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #ff4fa3, #ffb86c);
+  margin: 0;
+  padding: 40px;
+  color: white;
+}
+
+h1 {
+  text-align: center;
+}
+
+.container {
+  max-width: 600px;
+  margin: auto;
+  background: rgba(0,0,0,0.25);
+  padding: 20px;
+  border-radius: 15px;
+}
+
+input, button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 8px;
+  border: none;
+  font-size: 16px;
+}  
+
+button {
+  background: black;
+  color: white;
+  cursor: pointer;
+}
+   
+   * {
+  box-sizing: border-box;
+}
+button:hover {
+  opacity: 0.8;
+}
+
+.product {
+  background: white;
+  color: black;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 8px;
+}
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  #areaImprimir, #areaImprimir * {
+    visibility: visible;
+  }
+
+  #areaImprimir {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
+}
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 20px;
+}
+
+.salir{
+  background: rgba(0,0,0,0.25);
+  color:white;
+  text-decoration:none;
+  padding:0.10px 19px;
+  border-radius:0px;
+  font-size:14px;
+  font-weight:600;
+  transition:0.3s;
+}
+
+.salir:hover{
+  background:#333;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>modo caja</h1>
+<a class="salir" href="index.html">salir</a>
+
+<div class="container">
+  <h3>Agregar producto</h3>
+  <input type="text" id="nombre" placeholder="Nombre del producto">
+  <input type="number" id="precio" placeholder="Precio">
+  <input type="number" id="cantidad" placeholder="Cantidad disponible">
+  <input type="text" id="imagen" placeholder="URL de la imagen">
+  <button id="btnAgregar">Agregar</button>
+    <button id="escanear">escanear producto</button>
+
+  <h3>Productos</h3>
+  <div id="lista"></div>
+  <div id="areaImprimir" style="display:none;"></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+<script>
+const supabaseClient = window.supabase.createClient(
+  "https://fwujxwmjckrbqnlioifp.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3dWp4d21qY2tyYnFubGlvaWZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4ODQ5OTAsImV4cCI6MjA4NzQ2MDk5MH0.FlPMctJpmOEvBYKBrFEzKgDVjJTHex5K-PFbLOoo1kw"
+);
+function imprimirEtiqueta(prod) {
+  const area = document.getElementById("areaImprimir");
+
+  area.innerHTML = `
+    <div style="text-align:center;">
+      <h3>${prod.nombre}</h3>
+      <svg id="print-barcode"></svg>
+      <p>$${prod.precio}</p>
+    </div>
+  `;
+
+  JsBarcode("#print-barcode", prod.codigo_barras, {
+    format: "CODE128",
+    displayValue: true,
+    width:2,
+    height:80
+  });
+
+  area.style.display = "block";
+  window.print();
+  area.style.display = "none";
+}
+async function verificarAdmin() {
+  const { data: { user }, error } = await supabaseClient.auth.getUser();
+
+  if (!user) {
+    alert("No estás logueado");
+    window.location.href = "login.html";
+    return;
+  }
+
+  const { data, error: profileError } = await supabaseClient
+    .from("profiles")
+    .select("is_admin")
+    .eq("id", user.id)
+    .single();
+
+  if (profileError || !data || !data.is_admin) {
+    alert("No sos admin");
+    window.location.href = "index.html";
+  }
+}
+
+async function agregarProducto() {
+  const nombre = document.getElementById("nombre").value.trim();
+  const precio = document.getElementById("precio").value;
+  const cantidad = document.getElementById("cantidad").value;
+  const imagen = document.getElementById("imagen").value.trim();
+  const codigoGenerado = "CT-" + Math.floor(100000 + Math.random() * 900000);
+  
+  
+
+  if (!nombre || !precio || !cantidad || !imagen) {
+    alert("Completa todos los campos");
+    return;
+  }
+
+  const { error } = await supabaseClient
+    .from("productos")
+    .insert([{ 
+      codigo_barras: codigoGenerado,
+      nombre, 
+      precio, 
+      cantidad_de_unidades: cantidad,
+      imagen_url: imagen
+    }]);
+
+  if (error) {
+    alert("Error: " + error.message);
+  } else {
+    cargarProductos();
+  }
+}
+async function cargarProductos() {
+  const { data, error } = await supabaseClient
+    .from("productos")
+    .select("*")
+    .order("id", { ascending: false });
+
+  if (error) {
+    console.log(error);
+    return;
+  }
+
+  const lista = document.getElementById("lista");
+  lista.innerHTML = "";
+
+  data.forEach(prod => {
+    const div = document.createElement("div");
+    div.className = "product";
+    div.innerHTML = `
+  <svg id="barcode-${prod.id}"></svg>
+  <img src="${prod.imagen_url}" style="width:100%;">
+  <strong>${prod.nombre}</strong><br>
+  $${prod.precio}<br>
+  Stock: ${prod.cantidad_de_unidades}
+  <button data-id="${prod.id}">Eliminar</button>
+  <button class="btnImprimir">Imprimir</button>
+`;
+
+lista.appendChild(div);
+JsBarcode(`#barcode-${prod.id}`, prod.codigo_barras, {
+  format: "CODE128",
+  displayValue: true,
+  fontSize: 14,
+  width:1.5,
+  height:60
+});
+    div.querySelector("button").addEventListener("click", async () => {
+      await eliminarProducto(prod.id);
+      
+    });
+
+    div.querySelector(".btnImprimir").addEventListener("click", () => {
+  imprimirEtiqueta(prod);
+});
+  });
+}
+
+async function eliminarProducto(id) {
+  const { error } = await supabaseClient
+    .from("productos")
+    .delete()
+    .eq("id", id);
+
+  if (!error) {
+    cargarProductos();
+  }
+}
+  document.getElementById("escanear").addEventListener("click", () => {
+  window.location.href = "escanear.html";
+});
+document.getElementById("btnAgregar").addEventListener("click", agregarProducto);
+
+(async () => {
+  await verificarAdmin();
+  await cargarProductos();
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registro - Cool Trinidad</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+
+:root{
+  --primary:#ff2f8e;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:'Montserrat', sans-serif;
+  background:#f8f8f8;
+  color:#111;
+}
+
+/* NAV */
+nav{
+  background:white;
+  border-bottom:1px solid #eee;
+}
+
+.nav-container{
+  max-width:1100px;
+  margin:auto;
+  padding:18px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.logo{
+  font-weight:800;
+  letter-spacing:2px;
+}
+
+/* TOP BAR */
+.top-bar{
+  background:black;
+}
+
+.top-content{
+  max-width:1100px;
+  margin:auto;
+  padding:8px 20px;
+  display:flex;
+  justify-content:flex-end;
+  gap:25px;
+}
+
+.top-content a{
+  color:white;
+  text-decoration:none;
+  font-size:13px;
+}
+
+/* REGISTRO */
+.register-section{
+  min-height:80vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:40px 20px;
+}
+
+.register-box{
+  background:white;
+  padding:40px;
+  width:100%;
+  max-width:400px;
+  border-radius:20px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.08);
+}
+
+.register-box h2{
+  text-align:center;
+  margin-bottom:30px;
+}
+
+.register-box input{
+  width:100%;
+  padding:12px;
+  margin-bottom:15px;
+  border-radius:10px;
+  border:1px solid #ddd;
+}
+
+.register-box button{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  background:var(--primary);
+  color:white;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.register-box button:hover{
+  opacity:0.9;
+}
+
+.extra-links{
+  text-align:center;
+  margin-top:15px;
+  font-size:13px;
+}
+
+.extra-links a{
+  text-decoration:none;
+  color:var(--primary);
+}
+
+@media(max-width:600px){
+  .top-content{
+    justify-content:center;
+  }
+}
+
+</style>
+</head>
+
+<body>
+
+<nav>
+  <div class="nav-container">
+    <div class="logo">COOL TRINIDAD</div>
+  </div>
+</nav>
+
+<div class="top-bar">
+  <div class="top-content">
+    <a href="index.html">Volver</a>
+    <a href="login.html">Login</a>
+    <a href="#">Carrito</a>
+    <a href="#">Contacto</a>
+  </div>
+</div>
+
+<section class="register-section">
+  <div class="register-box">
+    <h2>Crear Cuenta</h2>
+    <form>
+      <input type="email" placeholder="Correo electrónico" required>
+      <input type="password" placeholder="Contraseña (mínimo 6 caracteres)" required>
+      <button type="submit">Registrarme</button>
+    </form>
+    <div class="extra-links">
+      <p>¿Ya tienes cuenta? <a href="login.html">Inicia sesión</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- SUPABASE -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+  const supabaseUrl = "https://fwujxwmjckrbqnlioifp.supabase.co";
+  const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3dWp4d21qY2tyYnFubGlvaWZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4ODQ5OTAsImV4cCI6MjA4NzQ2MDk5MH0.FlPMctJpmOEvBYKBrFEzKgDVjJTHex5K-PFbLOoo1kw";
+  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+  const form = document.querySelector("form");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const email = form.querySelector('input[type="email"]').value;
+    const password = form.querySelector('input[type="password"]').value;
+
+    const { error } = await supabase.auth.signUp({
+      email,
+      password
+    });
+
+    if(error){
+      alert("Error: " + error.message);
+    } else {
+      alert("Cuenta creada 🎉 Ahora inicia sesión");
+      window.location.href = "login.html";
+    }
+  });
+
+});
+</script>
+
+</body>
+</html>
