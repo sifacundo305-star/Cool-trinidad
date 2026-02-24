@@ -272,11 +272,21 @@ h2::after{
 
 <script>
 document.addEventListener("DOMContentLoaded", async function(){
+globalThis.navigator.locks = undefined;
 
-  const supabaseUrl = "https://fwujxwmjckrbqnlioifp.supabase.co";
-  const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3dWp4d21qY2tyYnFubGlvaWZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4ODQ5OTAsImV4cCI6MjA4NzQ2MDk5MH0.FlPMctJpmOEvBYKBrFEzKgDVjJTHex5K-PFbLOoo1kw";
-  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-  await verificarAdmin();
+const supabase = createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY,
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+      storage: window.localStorage
+    }
+  }
+);
+   await verificarAdmin();
 
   // LOGOUT
   const logoutBtn = document.getElementById("logoutBtn");
