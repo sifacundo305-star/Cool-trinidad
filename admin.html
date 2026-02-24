@@ -7,65 +7,138 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
 body {
   font-family: Arial, sans-serif;
   background: linear-gradient(135deg, #ff4fa3, #ffb86c);
-  margin: 0;
-  padding: 40px;
+  min-height: 100vh;
+  padding: 20px;
   color: white;
 }
 
+/* HEADER */
 h1 {
   text-align: center;
+  font-size: 32px;
+  margin-bottom: 10px;
+  font-weight: bold;
+  letter-spacing: 1px;
 }
+
+.salir {
+  display: block;
+  width: fit-content;
+  margin: 0 auto 25px auto;
+  background: rgba(0,0,0,0.4);
+  color: white;
+  text-decoration: none;
+  padding: 10px 25px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.salir:hover {
+  background: black;
+}
+
+/* CONTENEDOR PRINCIPAL */
 .container {
-  width: 95%;
-  max-width: none;   /* un poco más grande */
-  margin: 40px auto;
-  background: rgba(0,0,0,0.25);
-  padding: 25px;
-  border-radius: 15px;
+  width: 100%;
+  margin: 0 auto;
+  background: rgba(0,0,0,0.35);
+  padding: 30px;
+  border-radius: 20px;
 }
 
-  @media (max-width: 600px){
-  .container{
-    max-width: 100%;
-    padding: 20px;
-  }
-  }
-
-input, button {
+/* INPUTS */
+input {
   width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  border-radius: 8px;
+  height: 55px;
+  margin-top: 12px;
+  padding: 0 15px;
+  border-radius: 12px;
   border: none;
-  font-size: 16px;
-}  
+  font-size: 17px;
+  outline: none;
+}
 
+/* BOTONES */
 button {
+  width: 100%;
+  height: 60px;
+  margin-top: 15px;
+  border-radius: 14px;
+  border: none;
+  font-size: 17px;
+  font-weight: bold;
   background: black;
   color: white;
   cursor: pointer;
-  height: 55px;
-  font-size: 16px;
-  border-radius: 10px;
-}
-   
-   * {
-  box-sizing: border-box;
-}
-button:hover {
-  opacity: 0.8;
+  transition: 0.2s;
 }
 
+button:hover {
+  transform: scale(1.02);
+  opacity: 0.9;
+}
+
+/* TARJETA PRODUCTO */
 .product {
   background: white;
   color: black;
-  padding: 10px;
-  margin-top: 10px;
-  border-radius: 8px;
+  padding: 18px;
+  margin-top: 20px;
+  border-radius: 18px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
 }
+
+.product img {
+  width: 100%;
+  border-radius: 12px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.product strong {
+  font-size: 18px;
+}
+
+.product button {
+  margin-top: 10px;
+  background: #ff4fa3;
+}
+
+.product button:hover {
+  background: #e03d8f;
+}
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+  body {
+    padding: 15px;
+  }
+
+  .container {
+    padding: 20px;
+    border-radius: 15px;
+  }
+
+  h1 {
+    font-size: 26px;
+  }
+}
+
+/* IMPRESIÓN */
 @media print {
   body * {
     visibility: hidden;
@@ -82,40 +155,6 @@ button:hover {
     width: 100%;
   }
 }
-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:10px 20px;
-}
-
-.salir{
-  background: rgba(0,0,0,0.25);
-  color:white;
-  text-decoration:none;
-  padding:0.10px 19px;
-  border-radius:0px;
-  font-size:14px;
-  font-weight:600;
-  transition:0.3s;
-}
-
-.salir:hover{
-  background:#333;
-}
-html, body {
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  font-family: Arial, sans-serif;
-  background: linear-gradient(135deg, #ff4fa3, #ffb86c);
-  min-height: 100vh;
-  padding: 40px 20px;
-  color: white;
-}
-
 
 </style>
 </head>
