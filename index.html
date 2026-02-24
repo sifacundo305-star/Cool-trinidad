@@ -256,7 +256,7 @@ h2::after{
    target="_blank" class="whatsApp">
    Consultar por WhatsApp
 </a>
-<a href="admin.html" id="adminLink" class="admin-btn">modo caja</a>
+<a id="btnCaja" href="admin.html" id="adminLink" class="admin-btn">modo caja</a>
 </section>
 
 
@@ -309,6 +309,23 @@ async function verificarAdmin(){
     document.getElementById("adminLink").style.display = "inline-block";
   }
 }
+  async function controlarBotonCaja() {
+  const { data: { user } } = await supabaseClient.auth.getUser();
+
+  if (!user) return;
+
+  const { data } = await supabaseClient
+    .from("profiles")
+    .select("is_admin")
+    .eq("id", user.id)
+    .single();
+
+  if (!data || !data.is_admin) {
+    document.getElementById("btnCaja").style.display = "none";
+  }
+}
+
+controlarBotonCaja();
   // CARGAR PRODUCTOS
   async function cargarProductos(){
     const { data, error } = await supabase
