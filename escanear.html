@@ -6,7 +6,6 @@
 <title>Escanear - Cool Trinidad</title>
 
 <script src="https://unpkg.com/quagga/dist/quagga.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 body{
@@ -67,17 +66,14 @@ button{
 <button id="btnVenta" style="display:none; margin-top:15px;">
   finalizar venta
 </button>
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="supabase.js"></script>
 <script>
 let carrito = [];
 let total = 0;
 let beep;
 let bloqueado = false;
 
-const supabaseClient = window.supabase.createClient(
-  "https://fwujxwmjckrbqnlioifp.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3dWp4d21qY2tyYnFubGlvaWZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4ODQ5OTAsImV4cCI6MjA4NzQ2MDk5MH0.FlPMctJpmOEvBYKBrFEzKgDVjJTHex5K-PFbLOoo1kw"
-);
 
 const video = document.createElement("video");
 video.setAttribute("playsinline", true);
