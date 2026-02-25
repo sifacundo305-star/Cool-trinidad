@@ -26,6 +26,10 @@ body{
   color:#111;
 }
 
+  #adminLink{
+  display:none;
+  }
+
 /* NAV */
 nav{
   background:white;
@@ -293,7 +297,6 @@ document.addEventListener("DOMContentLoaded", async function(){
 async function verificarAdmin(){
 
   const { data: { user } } = await supabase.auth.getUser();
-
   if(!user) return;
 
   const { data, error } = await supabase
