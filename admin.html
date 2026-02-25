@@ -5,16 +5,25 @@
 <title>caja</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="supabase.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
 <style>
 body {
   font-family: Arial, sans-serif;
   background: linear-gradient(135deg, #ff4fa3, #ffb86c);
   margin: 0;
-  padding: 40px;
+  padding: 20px;
   color: white;
 }
+  @media (max-width: 600px) {
+  body {
+    padding: 15px;
+  }
 
+  .container {
+    padding: 15px;
+  }
+  }
 h1 {
   text-align: center;
 }
@@ -110,9 +119,10 @@ header{
 <body>
 
 <h1>modo caja</h1>
-<a class="salir" href="index.html">salir</a>
 
 <div class="container">
+  <a class="salir" href="index.html">salir</a>
+
   <h3>Agregar producto</h3>
   <input type="text" id="nombre" placeholder="Nombre del producto">
   <input type="number" id="precio" placeholder="Precio">
