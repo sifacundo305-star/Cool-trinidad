@@ -137,8 +137,11 @@ function imprimirEtiqueta(prod) {
   });
 
   area.style.display = "block";
+
+setTimeout(() => {
   window.print();
   area.style.display = "none";
+}, 300);
 }
 async function verificarAdmin() {
   const { data: { user }, error } = await supabaseClient.auth.getUser();
