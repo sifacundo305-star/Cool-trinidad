@@ -57,19 +57,24 @@ button:hover {
   border-radius: 8px;
 }
 @media print {
-  body * {
-    visibility: hidden;
+  body {
+    margin: 0;
   }
 
-  #areaImprimir, #areaImprimir * {
-    visibility: visible;
+  body * {
+    display: none !important;
   }
 
   #areaImprimir {
+    display: block !important;
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
+  }
+
+  #areaImprimir * {
+    display: block !important;
   }
 }
 header{
