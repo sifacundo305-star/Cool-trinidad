@@ -57,8 +57,10 @@ button:hover {
   border-radius: 8px;
 }
 @media print {
-  body {
-    margin: 0;
+
+  @page {
+    size: A4;
+    margin: 10mm;
   }
 
   body * {
@@ -66,15 +68,18 @@ button:hover {
   }
 
   #areaImprimir {
-    display: block !important;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10mm;
   }
 
-  #areaImprimir * {
-    display: block !important;
+  .etiqueta {
+    width: 60mm;
+    height: 35mm;
+    border: 1px solid black;
+    padding: 4mm;
+    text-align: center;
+    font-size: 12px;
   }
 }
 header{
@@ -125,28 +130,34 @@ header{
   
 function imprimirEtiqueta(prod) {
   const area = document.getElementById("areaImprimir");
+  area.innerHTML = "";
 
-  area.innerHTML = `
-    <div style="text-align:center;">
-      <h3>${prod.nombre}</h3>
-      <svg id="print-barcode"></svg>
-      <p>$${prod.precio}</p>
-    </div>
-  `;
+  const cantidad = parseInt(prod.cantidad_de_unidades);
 
-  JsBarcode("#print-barcode", prod.codigo_barras, {
-    format: "CODE128",
-    displayValue: true,
-    width:2,
-    height:80
-  });
+  for (let i = 0; i < cantidad; i++) {
+    const div = document.createElement("div");
+    div.className = "etiqueta";
+    div.innerHTML = `
+      <strong>${prod.nombre}</strong>
+      <svg id="barcode-${i}"></svg>
+      <div>$${prod.precio}</div>
+    `;
+    area.appendChild(div);
+
+    JsBarcode(`#barcode-${i}`, prod.codigo_barras, {
+      format: "CODE128",
+      displayValue: false,
+      width: 2,
+      height: 40
+    });
+  }
 
   area.style.display = "block";
 
-setTimeout(() => {
-  window.print();
-  area.style.display = "none";
-}, 300);
+  setTimeout(() => {
+    window.print();
+    area.style.display = "none";
+  }, 300);
 }
 async function verificarAdmin() {
   const { data: { user }, error } = await supabaseClient.auth.getUser();
