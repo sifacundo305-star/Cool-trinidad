@@ -233,8 +233,17 @@ for (const producto of carrito) {
 for (const id in productosAgrupados) {
 
   const prod = productosAgrupados[id];
-  const nuevoStock = prod.cantidad_de_unidades - prod.cantidadVendida;
 
+  // 1️⃣ Traer stock actual REAL desde la base
+  const { data: productoActual } = await supabaseClient
+    .from("productos")
+    .select("cantidad_de_unidades")
+    .eq("id", prod.id)
+    .single();
+
+  const nuevoStock = productoActual.cantidad_de_unidades - prod.cantidadVendida;
+
+  // 2️⃣ Actualizar con el valor correcto
   await supabaseClient
     .from("productos")
     .update({ cantidad_de_unidades: nuevoStock })
@@ -248,7 +257,7 @@ for (const id in productosAgrupados) {
       precio: prod.precio,
       cantidad: prod.cantidadVendida
     });
-}
+  }
 
   carrito = [];
   total = 0;
