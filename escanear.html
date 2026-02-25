@@ -218,23 +218,37 @@ document.getElementById("btnVenta").onclick = async () => {
     return;
   }
 
-  for(const producto of carrito){
+  const productosAgrupados = {};
 
-    const nuevoStock = producto.cantidad_de_unidades - 1;
-
-    await supabaseClient
-  .from("productos")
-  .update({ cantidad_de_unidades: nuevoStock })
-  .eq("id", producto.id);
-    await supabaseClient
-      .from("detalle_venta")
-      .insert({
-        venta_id: venta.id,
-        producto_id: producto.id,
-        precio: producto.precio,
-        cantidad: 1
-      });
+for (const producto of carrito) {
+  if (!productosAgrupados[producto.id]) {
+    productosAgrupados[producto.id] = {
+      ...producto,
+      cantidadVendida: 0
+    };
   }
+  productosAgrupados[producto.id].cantidadVendida++;
+}
+
+for (const id in productosAgrupados) {
+
+  const prod = productosAgrupados[id];
+  const nuevoStock = prod.cantidad_de_unidades - prod.cantidadVendida;
+
+  await supabaseClient
+    .from("productos")
+    .update({ cantidad_de_unidades: nuevoStock })
+    .eq("id", prod.id);
+
+  await supabaseClient
+    .from("detalle_venta")
+    .insert({
+      venta_id: venta.id,
+      producto_id: prod.id,
+      precio: prod.precio,
+      cantidad: prod.cantidadVendida
+    });
+}
 
   carrito = [];
   total = 0;
