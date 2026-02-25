@@ -3,9 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <title>caja</title>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="supabase.js"></script>
 <style>
 body {
   font-family: Arial, sans-serif;
@@ -115,12 +114,9 @@ header{
   <div id="lista"></div>
   <div id="areaImprimir" style="display:none;"></div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+  
 <script>
-const supabaseClient = window.supabase.createClient(
-  "https://fwujxwmjckrbqnlioifp.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3dWp4d21qY2tyYnFubGlvaWZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4ODQ5OTAsImV4cCI6MjA4NzQ2MDk5MH0.FlPMctJpmOEvBYKBrFEzKgDVjJTHex5K-PFbLOoo1kw"
-);
+  
 function imprimirEtiqueta(prod) {
   const area = document.getElementById("areaImprimir");
 
