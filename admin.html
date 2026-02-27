@@ -195,6 +195,21 @@ header{
   font-size: 16px;
   font-weight: bold;
 }
+@page {
+  size: A4;
+  margin: 0;
+}
+
+@media print {
+  body {
+    margin: 10mm;
+  }
+
+  .etiqueta {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
       </style>
       <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"><\/script>
     </head>
