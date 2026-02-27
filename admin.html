@@ -204,10 +204,10 @@ header{
   for (let i = 0; i < cantidad; i++) {
     contenido += `
       <div class="etiqueta">
-        <strong>${prod.nombre}</strong>
-        <svg id="barcode-${i}"></svg>
-        <div>$${prod.precio}</div>
-      </div>
+  <strong>${prod.nombre}</strong>
+  <svg id="barcode-${i}"></svg>
+  <div class="precio">$${prod.precio}</div>
+</div>
     `;
   }
 
