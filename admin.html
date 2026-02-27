@@ -151,11 +151,7 @@ function imprimirEtiqueta(prod) {
   area.innerHTML = "";
 
   const cantidad = Number(prod.cantidad_de_unidades) || 0;
-
-  if (cantidad <= 0) {
-    alert("No hay stock para imprimir");
-    return;
-  }
+  if (cantidad <= 0) return;
 
   for (let i = 0; i < cantidad; i++) {
     const div = document.createElement("div");
@@ -175,17 +171,9 @@ function imprimirEtiqueta(prod) {
     });
   }
 
-  area.style.display = "block";
-
-  // Esperar que el DOM renderice completamente
   setTimeout(() => {
     window.print();
   }, 500);
-
-  // Ocultar DESPUÉS de imprimir
-  window.onafterprint = () => {
-    area.style.display = "none";
-  };
 }
 async function verificarAdmin() {
   const { data: { user }, error } = await supabaseClient.auth.getUser();
