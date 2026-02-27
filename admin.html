@@ -156,14 +156,12 @@ function imprimirEtiqueta(prod) {
   area.innerHTML = "";
 
   const cantidad = parseInt(prod.cantidad_de_unidades);
-
   if (!cantidad || cantidad <= 0) {
-    alert("Este producto no tiene stock para imprimir etiquetas");
+    alert("Sin stock para imprimir");
     return;
   }
 
   for (let i = 0; i < cantidad; i++) {
-
     const div = document.createElement("div");
     div.className = "etiqueta";
     div.innerHTML = `
@@ -171,7 +169,6 @@ function imprimirEtiqueta(prod) {
       <svg id="barcode-print-${i}"></svg>
       <div>$${prod.precio}</div>
     `;
-
     area.appendChild(div);
 
     JsBarcode(`#barcode-print-${i}`, prod.codigo_barras, {
@@ -182,12 +179,19 @@ function imprimirEtiqueta(prod) {
     });
   }
 
+  // 👇 FORZAR RENDER REAL
+  area.style.display = "block";
+  void area.offsetHeight; // fuerza reflow
+
   setTimeout(() => {
-    window.print();
-  }, 400);
+    requestAnimationFrame(() => {
+      window.print();
+    });
+  }, 800);
 
   window.onafterprint = () => {
     area.innerHTML = "";
+    area.style.display = "none";
   };
 }
 async function verificarAdmin() {
