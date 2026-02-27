@@ -76,10 +76,6 @@ button:hover {
     margin: 10mm;
   }
 
-  body {
-    background: white !important;
-  }
-
   body > *:not(#areaImprimir) {
     display: none !important;
   }
@@ -147,13 +143,15 @@ header{
 <script>
   
 function imprimirEtiqueta(prod) {
+
   const area = document.getElementById("areaImprimir");
-  area.innerHTML = "";
+  area.innerHTML = ""; // limpiar antes
 
   const cantidad = Number(prod.cantidad_de_unidades) || 0;
   if (cantidad <= 0) return;
 
   for (let i = 0; i < cantidad; i++) {
+
     const div = document.createElement("div");
     div.className = "etiqueta";
     div.innerHTML = `
@@ -161,6 +159,7 @@ function imprimirEtiqueta(prod) {
       <svg id="barcode-print-${i}"></svg>
       <div>$${prod.precio}</div>
     `;
+
     area.appendChild(div);
 
     JsBarcode(`#barcode-print-${i}`, prod.codigo_barras, {
@@ -171,9 +170,15 @@ function imprimirEtiqueta(prod) {
     });
   }
 
+  // Esperar render real
   setTimeout(() => {
     window.print();
-  }, 500);
+  }, 400);
+
+  // 🔥 LIMPIAR DESPUÉS DE IMPRIMIR
+  window.onafterprint = () => {
+    area.innerHTML = "";
+  };
 }
 async function verificarAdmin() {
   const { data: { user }, error } = await supabaseClient.auth.getUser();
