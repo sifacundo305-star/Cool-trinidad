@@ -77,23 +77,14 @@ button:hover {
   }
 
   body {
-    background: white;
+    background: white !important;
   }
 
-  body * {
-    visibility: hidden;
-  }
-
-  #areaImprimir,
-  #areaImprimir * {
-    visibility: visible;
+  body > *:not(#areaImprimir) {
+    display: none !important;
   }
 
   #areaImprimir {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 10mm;
@@ -150,7 +141,7 @@ header{
 
   <h3>Productos</h3>
   <div id="lista"></div>
-  <div id="areaImprimir" style="display:none;"></div>
+  <div id="areaImprimir"></div>
 </div>
   
 <script>
