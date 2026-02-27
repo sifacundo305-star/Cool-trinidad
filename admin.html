@@ -76,12 +76,25 @@ button:hover {
     margin: 10mm;
   }
 
+  body {
+    background: white;
+  }
+
   body * {
-    display: none !important;
+    visibility: hidden;
+  }
+
+  #areaImprimir,
+  #areaImprimir * {
+    visibility: visible;
   }
 
   #areaImprimir {
-    display: grid !important;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 10mm;
   }
