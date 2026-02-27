@@ -146,19 +146,24 @@ function imprimirEtiqueta(prod) {
   const area = document.getElementById("areaImprimir");
   area.innerHTML = "";
 
-  const cantidad = parseInt(prod.cantidad_de_unidades);
+  const cantidad = Number(prod.cantidad_de_unidades) || 0;
+
+  if (cantidad <= 0) {
+    alert("No hay stock para imprimir");
+    return;
+  }
 
   for (let i = 0; i < cantidad; i++) {
     const div = document.createElement("div");
     div.className = "etiqueta";
     div.innerHTML = `
       <strong>${prod.nombre}</strong>
-      <svg id="barcode-${i}"></svg>
+      <svg id="barcode-print-${i}"></svg>
       <div>$${prod.precio}</div>
     `;
     area.appendChild(div);
 
-    JsBarcode(`#barcode-${i}`, prod.codigo_barras, {
+    JsBarcode(`#barcode-print-${i}`, prod.codigo_barras, {
       format: "CODE128",
       displayValue: false,
       width: 2,
@@ -168,10 +173,15 @@ function imprimirEtiqueta(prod) {
 
   area.style.display = "block";
 
+  // Esperar que el DOM renderice completamente
   setTimeout(() => {
     window.print();
+  }, 500);
+
+  // Ocultar DESPUÉS de imprimir
+  window.onafterprint = () => {
     area.style.display = "none";
-  }, 300);
+  };
 }
 async function verificarAdmin() {
   const { data: { user }, error } = await supabaseClient.auth.getUser();
