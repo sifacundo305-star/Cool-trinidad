@@ -145,10 +145,14 @@ header{
 function imprimirEtiqueta(prod) {
 
   const area = document.getElementById("areaImprimir");
-  area.innerHTML = ""; // limpiar antes
+  area.innerHTML = "";
 
-  const cantidad = Number(prod.cantidad_de_unidades) || 0;
-  if (cantidad <= 0) return;
+  const cantidad = parseInt(prod.cantidad_de_unidades);
+
+  if (!cantidad || cantidad <= 0) {
+    alert("Este producto no tiene stock para imprimir etiquetas");
+    return;
+  }
 
   for (let i = 0; i < cantidad; i++) {
 
@@ -170,12 +174,10 @@ function imprimirEtiqueta(prod) {
     });
   }
 
-  // Esperar render real
   setTimeout(() => {
     window.print();
   }, 400);
 
-  // 🔥 LIMPIAR DESPUÉS DE IMPRIMIR
   window.onafterprint = () => {
     area.innerHTML = "";
   };
