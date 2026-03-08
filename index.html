@@ -256,10 +256,12 @@ h2::after{
   <h1>Cool Trinidad</h1>
   <p>Crea tu propio estilo</p>
   <br>
-  <a href="https://wa.me/59899123456?text=Hola%20quiero%20consultar%20por%20un%20producto" 
-   target="_blank" class="whatsApp">
-   Consultar por WhatsApp
-</a>
+  <a id="whatsappBtn"
+href="#"
+target="_blank"
+class="whatsApp">
+Pedir por WhatsApp
+  </a>
 <a href="admin.html" id="adminLink" class="admin-btn">modo caja</a>
 </section>
 
@@ -276,9 +278,8 @@ h2::after{
 <script src="supabase.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", async function(){
-
+let carrito = [];
   await verificarAdmin();
-
   // LOGOUT
   const logoutBtn = document.getElementById("logoutBtn");
 
@@ -333,7 +334,7 @@ async function verificarAdmin(){
         <div class="card-content">
           <h3>${prod.nombre}</h3>
           <div class="price">$${prod.precio}</div>
-          <button>Comprar</button>          
+          <button class="btnComprar">Comprar</button>          
         </div>
       `;
 
@@ -344,7 +345,39 @@ async function verificarAdmin(){
   cargarProductos();
 });
 
+card.querySelector(".btnComprar").addEventListener("click", () => {
 
+  const producto = {
+    nombre: prod.nombre,
+    precio: prod.precio
+  };
+
+  carrito.push(producto);
+
+  alert(prod.nombre + " agregado al carrito");
+});
+  document.getElementById("whatsappBtn").addEventListener("click", () => {
+
+  if(carrito.length === 0){
+    alert("El carrito está vacío");
+    return;
+  }
+
+  let mensaje = "Hola, quiero pedir:%0A%0A";
+  let total = 0;
+
+  carrito.forEach(p => {
+    mensaje += "• " + p.nombre + " - $" + p.precio + "%0A";
+    total += Number(p.precio);
+  });
+
+  mensaje += "%0A*Total: $" + total + "*";
+
+  const telefono = "59899123456";
+
+  window.open(`https://wa.me/${telefono}?text=${mensaje}`, "_blank");
+
+});
 </script>
 
 </body>
